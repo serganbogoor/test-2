@@ -1,160 +1,73 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# размер в клетках для игрового поля
+board_size = 3
+# игровое поле
+board = [1,2,3,4,5,6,7,8,9]
 
-# C extensions
-*.so
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+def draw_board():
+	print (('_' * 4 * board_size ))
+	for i in range(board_size):
+		print ((' ' * 3 + '|') * 3)
+		print ('',board[i*3], '|', board[1+i*3], '|', board[2+i*3], '|')
+		print (('_' * 3 + '|') * 3)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+def check_win():
+	win = False
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+	win_combination = (
+		(0,1,2), (3,4,5), (6,7,8),	
+		(0,3,6), (1,4,7), (2,5,8),	
+		(0,4,8), (2,4,6) 			
+	)
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+	for pos in win_combination:
+		# len(set([board[pos[0]], board[pos[1]], board[pos[2]]]))
+		if (board[pos[0]] == board[pos[1]] and board[pos[1]] == board[pos[2]] and board[pos[1]] in ('X','O')):
+			win = board[pos[0]]
 
-# Translations
-*.mo
-*.pot
+	return win
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+def game_step(index, char):
+	if (index > 10 or index < 1 or board[index-1] in ('X','O')):
+		return False
 
-# Flask stuff:
-instance/
-.webassets-cache
+	board[index-1] = char
+	return True
 
-# Scrapy stuff:
-.scrapy
+def start_game():
+	# текущий игрок
+	current_player = 'X'
+	# номер шага
+	step = 1
 
-# Sphinx documentation
-docs/_build/
+	draw_board()
 
-# PyBuilder
-.pybuilder/
-target/
+	# игра продолжается до тех пор, пока кто-то не выиграет или выйдет
+	while (step < 9) and (check_win() == False):
+		index = input('Ходит ' + current_player + '. Введите номер поля (0 - выход):')
 
-# Jupyter Notebook
-.ipynb_checkpoints
+		if (int(index) == 0):
+			break
 
-# IPython
-profile_default/
-ipython_config.py
+		# если получилось сделать шаг
+		if (game_step(int(index), current_player)):
+			print('Удачный ход')
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+			if (current_player == 'X'):
+				current_player = 'O'
+			else:
+				current_player = 'X'
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+			draw_board()
+			# увеличим номер шага
+			step += 1
+		else:
+			print('Неверный номер! Повторите!')
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+	if (step == 9):
+		print('Игра оконцена. Ничья!')
+	else:
+		print('Выиграл ' + check_win())
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+print('Добро пожаловать в игру!')
+start_game()
